@@ -1,12 +1,15 @@
+@file:Suppress("unused")
+
 package org.ldemetrios.js
 
+import org.ldemetrios.utilities.cast
 import java.lang.StringBuilder
 import java.text.ParseException
 
 class JSParser(val string: String) {
     var pos = 0
 
-    private inline fun checkNotEnd() {
+    private fun checkNotEnd() {
         if (pos >= string.length) throw ParseException("Unexpected EOF", pos)
     }
 
@@ -126,7 +129,7 @@ class JSParser(val string: String) {
             expect(',')
             skipWs()
             expect('"')
-            val key = parseString()
+            @Suppress("NAME_SHADOWING") val key = parseString()
             expect('"')
             skipWs()
             expect(':')

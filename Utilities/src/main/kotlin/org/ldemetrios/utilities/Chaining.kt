@@ -5,7 +5,9 @@ package org.ldemetrios.utilities
 operator fun <T, R> ((T) -> R).unaryPlus(): T.() -> R = { this@unaryPlus(this) }
 operator fun <T, R> (T.() -> R).unaryMinus(): (T) -> R = { it.this() }
 
-fun <T, U> T.cast(): U = this as U
+@Suppress("UNCHECKED_CAST")
+fun <R> Any?.cast(): R = this as R
+inline fun <reified R> Any?.castOrNull(): R? = if (this is R) this else null
 
 fun <T> T.alsoPrint(): T {
     println(this)
@@ -18,3 +20,6 @@ fun <T> T.alsoPrintln(): T {
 }
 
 infix fun <A, B, C> ((A) -> B).then(other: (B) -> C): (A) -> C = { other(this(it)) }
+
+fun <T, A : T, B : T> A.applyIf(boolean: Boolean, func: (A) -> B): T =
+    if (boolean) func(this) else this

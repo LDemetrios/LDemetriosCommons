@@ -3,15 +3,10 @@
 package org.ldemetrios.functional
 
 fun <T> cons(x: T, list: Iterable<T>) = listOf(x) + list
-
 fun <T> first(list: Iterable<T>) = list.first()
-
 fun <T> next(list: Iterable<T>) = list.run { if (any()) this else null }?.drop(1)?.ifEmpty { null }
-
 fun <T> rest(list: Iterable<T>) = list.drop(1)
-
 fun <T> conj() = listOf<T>()
-
 fun <T> conj(it: Iterable<T>) = it
 
 fun <T> second(it: Iterable<T>): T? {
@@ -27,11 +22,7 @@ fun <T> nfirst(it: Iterable<Iterable<T>>) = next(it.first())
 fun <T> fnext(it: Iterable<Iterable<T>>) = next(it)?.first()
 fun <T> nnext(it: Iterable<Iterable<T>>) = next(it)?.run { next(this) }
 
-fun <T> seq(it: Iterable<T>) = it.toList()
-
 fun <C, T> instance7(c: Class<C>, x: T) = c.isInstance(x)
-
-fun <T> seq7(it: T) = it is List<*>
 
 fun <T> char7(it: T) = it is Char
 fun <T> string7(it: T) = it is String
@@ -59,9 +50,6 @@ fun <T> butlast(it: Iterable<T>): T? {
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T, C> cast(t: T) = t as C
-
 fun <T> nil7(it: T) = it == null
 @Suppress("KotlinConstantConditions")
 fun <T> false7(it: T) = it == false
@@ -71,9 +59,10 @@ fun <T> boolean7(it: T) = it is Boolean
 fun <T> some7(it: T) = it != null
 fun <T> any7(it: T) = true
 fun not(it: Boolean) = !it
-//fun str(vararg ss: Any?) = ss.joinToString("")
- 
-@Suppress("UNCHECKED_CAST")
-fun <T, U> identity() : (T) -> U = { it as U}
 
-//fun <T, U> BiConsumer<T, U>.asConsumer(): Consumer<Pair<T, U>> = { this(it.first, it.second) }
+@Suppress("UNCHECKED_CAST")
+fun <T, U> identity() : (T) -> U = { it as U }
+
+fun <T, U, R> ((T, U) -> R).asMono(): (Pair<T, U>) -> R = { this(it.first, it.second) }
+fun <T, U, R> ((Pair<T, U>) -> R).asBi(): (T, U) -> R = { t, u -> this(t to u) }
+
