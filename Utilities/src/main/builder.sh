@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -r kotlin
+rm -r kotlin-generated
 
 sources=$(find resources -name "*.typ" | awk '($0 != "resources/common.typ" && $0 != "resources/rules.typ")')
 cp resources/buildrules.typ resources/rules.typ
@@ -23,12 +23,12 @@ for source in $sources; do
 
   file=$(echo "$pref" | awk -F '/' '{ print $NF }')
 
-  mkdir -p "kotlin/$dir"
+  mkdir -p "kotlin-generated/$dir"
 
   converter/typst c --root ./resources $source --format txt
   #converter/typst c --root ./resources $source --format pdf
 
   cat "./resources/$pref.txt" | awk -F ';;' '{ for (i=1; i<=NF; i++) { print $i } }' > tmp
   rm "./resources/$pref.txt"
-  mv -T tmp "kotlin/$pref.kt"
+  mv -T tmp "kotlin-generated/$pref.kt"
 done

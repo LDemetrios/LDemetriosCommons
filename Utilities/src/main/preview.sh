@@ -20,7 +20,7 @@ for source in $sources; do
     continue
   fi
 
-  mkdir -p "kotlin/$dir"
+  mkdir -p "kotlin-generated/$dir"
 
   converter/typst c --root ./resources $source --format pdf
 done
