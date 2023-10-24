@@ -22,6 +22,6 @@ for source in $sources; do
 
   mkdir -p "kotlin-generated/$dir"
 
-  typst c --root ./resources $source --format pdf
+  ./typst-txt c --root ./resources $source --format pdf
 done
 

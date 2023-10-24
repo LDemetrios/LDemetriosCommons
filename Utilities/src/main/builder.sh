@@ -25,8 +25,8 @@ for source in $sources; do
 
   mkdir -p "kotlin-generated/$dir"
 
-  typst c --root ./resources $source --format txt
-  #typst c --root ./resources $source --format pdf
+  ./typst-txt c --root ./resources $source --format txt
+  #./typst-txt c --root ./resources $source --format pdf
 
   cat "./resources/$pref.txt" | awk -F ';;' '{ for (i=1; i<=NF; i++) { print $i } }' > tmp
   rm "./resources/$pref.txt"
