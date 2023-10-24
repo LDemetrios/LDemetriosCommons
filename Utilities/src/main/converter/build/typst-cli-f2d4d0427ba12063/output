@@ -1,4 +1,0 @@
-cargo:rustc-env=TARGET=x86_64-unknown-linux-gnu
-cargo:rerun-if-env-changed=TYPST_VERSION
-cargo:rerun-if-env-changed=GEN_ARTIFACTS
-cargo:rustc-env=TYPST_VERSION=0.8.0 (adc85703)
