@@ -1,0 +1,1 @@
+{"rustc":17954901377634971088,"features":"[\"union\"]","target":15021638563153388439,"profile":12415117930809651132,"path":14656106671900554652,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/smallvec-7b865654d8b76926/dep-lib-smallvec"}}],"rustflags":[],"metadata":15767570753543272391,"config":2202906307356721367,"compile_kind":0}

@@ -1,0 +1,10 @@
+/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/deps/lock_api-9156dcc1adcbcd94.rmeta: /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/lib.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/mutex.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/remutex.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/rwlock.rs
+
+/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/deps/liblock_api-9156dcc1adcbcd94.rlib: /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/lib.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/mutex.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/remutex.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/rwlock.rs
+
+/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/deps/lock_api-9156dcc1adcbcd94.d: /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/lib.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/mutex.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/remutex.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/rwlock.rs
+
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/lib.rs:
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/mutex.rs:
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/remutex.rs:
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lock_api-0.4.10/src/rwlock.rs:

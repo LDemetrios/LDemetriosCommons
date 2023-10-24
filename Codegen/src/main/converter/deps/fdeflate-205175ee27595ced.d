@@ -1,0 +1,10 @@
+/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/deps/fdeflate-205175ee27595ced.rmeta: /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/lib.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/compress.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/decompress.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/tables.rs
+
+/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/deps/libfdeflate-205175ee27595ced.rlib: /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/lib.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/compress.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/decompress.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/tables.rs
+
+/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/deps/fdeflate-205175ee27595ced.d: /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/lib.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/compress.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/decompress.rs /home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/tables.rs
+
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/lib.rs:
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/compress.rs:
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/decompress.rs:
+/home/ldemetrios/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fdeflate-0.3.0/src/tables.rs:

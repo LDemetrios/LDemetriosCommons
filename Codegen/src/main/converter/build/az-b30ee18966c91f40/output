@@ -1,0 +1,6 @@
+$ mkdir -p "/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/build/az-b30ee18966c91f40/out/try_track_caller"
+$ cd "/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/build/az-b30ee18966c91f40/out/try_track_caller"
+$ printf '%s' "// try_tra"... > "/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/build/az-b30ee18966c91f40/out/try_track_caller/try_track_caller.rs"
+$ cd "/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/build/az-b30ee18966c91f40/out/try_track_caller" && "/home/ldemetrios/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc" "try_track_caller.rs" "--emit=dep-info,metadata" >& /dev/null
+cargo:rustc-cfg=track_caller
+$ rm -r "/home/ldemetrios/Workspace/clone/LDemetriosCommons/Codegen/src/main/resources/typst/target/release/build/az-b30ee18966c91f40/out/try_track_caller"
