@@ -16,4 +16,14 @@ abstract class Delayed<T> {
     }
 
     abstract fun compute(): T
+
+    override fun toString(): String = if(initialized) {
+        "Delayed[$value]"
+    } else {
+        "Uninitialized Delayed 0x" + Integer.toHexString(this.hashCode())
+    }
+}
+
+fun <T> delayed(func: () -> T): Delayed<T> = object : Delayed<T>() {
+    override fun compute(): T = func()
 }
