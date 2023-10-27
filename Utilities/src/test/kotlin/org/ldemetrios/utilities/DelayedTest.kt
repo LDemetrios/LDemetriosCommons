@@ -15,16 +15,15 @@ class DelayedTest {
             "abc"
         }
         assertEquals(0, executed)
-        println(delayed.toString())
         assertTrue(Regex("Uninitialized Delayed 0x[0-9a-f]{8}").matches(delayed.toString()))
         val value = delayed.get()
         assertEquals(1, executed)
-        assertEquals(value, "abc")
-        assertEquals(delayed.toString(), "Delayed[abc]")
+        assertEquals("abc", value)
+        assertEquals("Delayed[abc]", delayed.toString())
         val value2 = delayed.get()
         assertEquals(1, executed)
-        assertEquals(value2, "abc")
-        assertEquals(delayed.toString(), "Delayed[abc]")
+        assertEquals("abc", value2)
+        assertEquals("Delayed[abc]", delayed.toString())
     }
 
     @Test
@@ -36,7 +35,7 @@ class DelayedTest {
         assertTrue(Regex("Uninitialized Delayed 0x[0-9a-f]{8}").matches(delayed.toString()))
         external = "def"
         val value = delayed.get()
-        assertEquals(value, "def")
-        assertEquals(delayed.toString(), "Delayed[def]")
+        assertEquals("def", value)
+        assertEquals("Delayed[def]", delayed.toString())
     }
 }
