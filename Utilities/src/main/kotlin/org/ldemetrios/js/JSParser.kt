@@ -5,6 +5,7 @@ package org.ldemetrios.js
 import org.ldemetrios.utilities.cast
 import java.lang.StringBuilder
 import java.text.ParseException
+import kotlin.math.min
 
 class JSParser(val string: String) {
     var pos = 0
@@ -18,12 +19,12 @@ class JSParser(val string: String) {
     }
 
     private fun expect(string: String) {
-        val from = pos
-        var index = 0
+        var index = pos
         for (c in string) {
-            if (peek() != c) throw ParseException("Expected $string, not ${string.take(index)}$c...", from)
+            if (this.string[index] != c) throw ParseException("Expected $string, not ${string.take(index)}$c...", pos)
             index++
         }
+        pos = index
     }
 
     private fun <T> expectAs(string: String, value: T): T {
@@ -96,7 +97,7 @@ class JSParser(val string: String) {
                 o
             }
 
-            '.', in '0'..'9' -> JSNumber(parseNumber())
+            '-', '.', in '0'..'9' -> JSNumber(parseNumber())
             else -> throw ParseException("Unexpected symbol ${peek()}", pos)
         }
         skipWs()
@@ -124,7 +125,12 @@ class JSParser(val string: String) {
         expect('"')
         skipWs()
         expect(':')
-        res[key] = parseValue()
+        val value = parseValue()
+        if (key == JSObject.PROTO_KEY) {
+            res.__proto__ = value as JSObject
+        } else {
+            res[key] = value
+        }
         while (peek() != '}') {
             expect(',')
             skipWs()
@@ -133,7 +139,12 @@ class JSParser(val string: String) {
             expect('"')
             skipWs()
             expect(':')
-            res[key] = parseValue()
+            val value = parseValue()
+            if (key == JSObject.PROTO_KEY) {
+                res.__proto__ = value as JSObject
+            } else {
+                res[key] = value
+            }
         }
         return res
     }
@@ -170,7 +181,7 @@ class JSParser(val string: String) {
         fun parseString(str: String) = parseValue(str).cast<JSString>()
     }
 
-//    override fun toString(): String {
-//        return string.substring(pos, min(pos + 15, string.length))
-//    }
+    override fun toString(): String {
+        return string.substring(pos, min(pos + 15, string.length))
+    }
 }

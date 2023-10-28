@@ -2,8 +2,6 @@
 
 package org.ldemetrios.js
 
-import java.lang.UnsupportedOperationException
-
 @Deprecated(
     "May cause interesting special effects",
     ReplaceWith("explicit type-based conversion")
@@ -15,7 +13,7 @@ fun Any?.asJS(): JSStuff = when (this) {
     is Number -> JSNumber(toDouble())
     is String -> JSString(this)
     is Map<*, *> -> JSObject.ofAny(mapKeys { it.toString() })
-    is Iterable<*> -> JSArray.ofAny(this)
+    is Iterable<*> -> JSArray.ofAnyList(this)
     else -> JSUndefined
 }
 
@@ -82,7 +80,7 @@ object JSNull : JSPrimitive {
     }
 }
 
-class JSNumber(private val number: Double) : JSPrimitive {
+data class JSNumber(private val number: Double) : JSPrimitive {
     override fun toString(indent: Int): String = number.toString()
     override fun toBoolean(): Boolean = number != 0.0 && number != -0.0
     override fun toDouble(): Double = number
@@ -92,32 +90,38 @@ class JSNumber(private val number: Double) : JSPrimitive {
     }
 }
 
-class JSString(private val str: String) : JSStuff {
+internal fun String.escape() =
+    replace("\\", "\\\\")
+        .replace("/", "\\/")
+        .replace("\"", "\\\"")
+        .replace("\b", "\\b")
+        .replace("\u000C", "\\f")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
+
+data class JSString(private val str: String) : JSStuff {
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append('"')
-        sb.append(
-            str
-                .replace("\\", "\\\\")
-                .replace("/", "\\/")
-                .replace("\"", "\\\"")
-                .replace("\b", "\\b")
-                .replace("\u000C", "\\f")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t")
-        )
+        sb.append(            str.escape()        )
         sb.append('"')
     }
 
     override fun get(ind: Int): JSStuff = if (ind in str.indices) JSString("" + str[ind]) else JSUndefined
-    override fun get(ind: String): JSStuff = ind.toIntOrNull()?.let { this[it] } ?: JSUndefined
+    override fun get(ind: String): JSStuff = ind
+        .removeSuffix(".0")
+        .toIntOrNull()
+        ?.let { this[it] }
+        ?: JSUndefined
+
     override fun toBoolean(): Boolean = str.isBlank() || str == "false" || str == "0"
     override fun toDouble(): Double = str.toDouble()
+    override fun toString() = toString(0)
 }
 
-fun JSStuff.isBamboo(): Boolean = this is JSPrimitive
-        || (this is JSArray && this.size == 1 && this[0].isBamboo())
-        || (this is JSObject && this.size == 1 && iterator().next().value.isBamboo())
+fun JSStuff.isBamboo(): Boolean = this is JSPrimitive || this is JSString
+        || (this is JSArray && (this.size == 0 || this.size == 1 && this[0].isBamboo()))
+        || (this is JSObject && (this.size == 0 || this.size == 1 && iterator().next().value.isBamboo()))
 
 interface JSContainer : JSStuff {
     val size: Int
@@ -126,3 +130,10 @@ interface JSContainer : JSStuff {
     operator fun set(ind: String, value: JSStuff): JSStuff
     operator fun set(ind: Any?, value: JSStuff) = set(ind.toString(), value)
 }
+
+val Number.js get() = JSNumber(toDouble())
+val Boolean.js get() = JSBoolean.of(this)
+val String.js get() = JSString(this)
+operator fun JSStuff?.get(ind: Int): JSStuff = if (this === null) JSNull else this[ind]
+operator fun JSStuff?.get(ind: String): JSStuff = if (this === null) JSNull else this[ind]
+operator fun JSStuff?.get(ind: Any?): JSStuff = if (this === null) JSNull else this[ind]

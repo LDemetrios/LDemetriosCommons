@@ -35,48 +35,46 @@ abstract class ContinuousCanvas(
     }
 
     fun move(dx: Double, dy: Double) {
-        centerX += dx
-        centerY += dy
+        centerX -= dx
+        centerY -= dy
         if (autoRepaint) repaint()
     }
 
     fun zoom(dz: Double) {
-        scale *= dz
+        scale /= dz
         if (autoRepaint) repaint()
     }
 
     fun zoomTo(dz: Double, x: Double, y: Double) {
         if (inverseY) {
-//            val newScale = scale * dz
-//            val xInt = (x - centerX) * scale
-//            val yInt = (y - centerY) * scale
-//            val xIntNew = (x - newCenterX) * newScale
-//            val yIntNew = (y - newCenterY) * newScale
+            // val newScale = scale * dz
+            // val xInt = (x - centerX) * scale
+            // val yInt = (y - centerY) * scale
+            // val xIntNew = (x - newCenterX) * newScale
+            // val yIntNew = (y - newCenterY) * newScale
             // xInt == xIntNew
             // (x - centerX) * scale = (x - newCenterX) * newScale = (x - newCenterX) * scale * dz
             // (x - centerX) = dz * x - newCenterX * dz
-            centerX = x - (x - centerX) / dz
-            centerY = y - (y - centerY) / dz
-            scale *= dz
+            centerX = x - (x - centerX) * dz
+            centerY = y - (y - centerY) * dz
         } else {
 //            val newScale = scale * dz
 //            val xInt = (x - centerX) * scale
 //            val yInt = (-y - centerY) * scale
 //            val xIntNew = (x - newCenterX) * newScale
 //            val yIntNew = (-y - newCenterY) * newScale
-            centerX = x - (x - centerX) / dz
+            centerX = x - (x - centerX) * dz
             // yInt == yIntNew
             // (-y - centerY) == (-y - newCenterY) * dz
             // (-y - centerY) / dz == -y - newCenterY
             // newCenterY == -y - (-y - centerY) / dz
-            centerY = -y - (-y - centerY) / dz
-            scale *= dz
+            centerY = -y - (-y - centerY) * dz
         }
-        if (autoRepaint) repaint()
+        zoom(dz)
     }
 
     fun zoomToPixel(dz: Double, x: Int, y: Int) {
-        zoomTo(dz, unresolveX(x), unresolveY(y))
+        zoomTo(dz, unresolveX(x - width / 2), unresolveY(y - height / 2))
     }
 
     fun resolveX(x: Number) = ((x.toDouble() - centerX) * scale).toInt()
@@ -104,8 +102,8 @@ abstract class ContinuousCanvas(
     private fun resolveMouseEvent(e: MouseEvent) = ContinuousMouseEvent(
         e.`when`,
         e.modifiersEx,
-        unresolveX(e.x),
-        unresolveY(e.y),
+        unresolveX(e.x - width / 2),
+        unresolveY(e.y - height / 2),
         e.clickCount,
         e,
     )
@@ -113,8 +111,8 @@ abstract class ContinuousCanvas(
     private fun resolveMouseWheelEvent(e: MouseWheelEvent) = ContinuousMouseWheelEvent(
         e.`when`,
         e.modifiersEx,
-        unresolveX(e.x),
-        unresolveY(e.y),
+        unresolveX(e.x - width / 2),
+        unresolveY(e.y - height / 2),
         e.clickCount,
         e.preciseWheelRotation,
         e,
@@ -155,7 +153,7 @@ abstract class ContinuousCanvas(
     private var prevY = -1
 
     override fun mouseDragged(e: MouseEvent) {
-        when(dragType) {
+        when (dragType) {
             DragType.Drag -> move(unresolveEdge(e.x - prevX), unresolveEdge(e.y - prevY))
             DragType.NoDrag -> Unit
         }
@@ -186,7 +184,7 @@ abstract class ContinuousCanvas(
 
     override fun mouseWheelMoved(e: MouseWheelEvent) {
         val dz = zoomFactor.pow(e.preciseWheelRotation)
-        when(zoomType) {
+        when (zoomType) {
             ZoomType.ZoomToPoint -> zoomToPixel(dz, e.x, e.y)
             ZoomType.ZoomCentered -> zoom(dz)
             ZoomType.NoZoom -> Unit

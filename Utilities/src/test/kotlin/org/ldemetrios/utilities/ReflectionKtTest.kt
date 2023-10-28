@@ -8,18 +8,40 @@ import org.ldemetrios.utils.testing.Assertions_assertEqualLists
 class ReflectionKtTest {
     @Test
     fun superclassList() {
-        assertEquals(LinkedHashMap::class.java, LinkedHashMap::class.java)
         Assertions_assertEqualLists(
-            listOf(LinkedHashMap::class, HashMap::class.java, java.util.AbstractMap::class.java, Object::class.java),
+            listOf(LinkedHashMap::class.java, HashMap::class.java, java.util.AbstractMap::class.java, Object::class.java),
             LinkedHashMap::class.java.superclassList()
         )
+        Assertions_assertEqualLists(
+            listOf(Integer::class.java, Number::class.java, Object::class.java),
+            Integer::class.java.superclassList()
+        )
+        Assertions_assertEqualLists(
+            listOf(String::class.java, Object::class.java),
+            String::class.java.superclassList()
+        )
+        Assertions_assertEqualLists(
+            listOf(Object::class.java),
+            Object::class.java.superclassList()
+        )
+        Assertions_assertEqualLists(
+            listOf(Int::class.java),
+            Int::class.java.superclassList()
+        )
     }
-
     @Test
     fun juniorestCommonSuperclass() {
         assertEquals(
             Object::class.java,
             juniorestCommonSuperclass(Integer::class.java, String::class.java)
+        )
+        assertEquals(
+            java.lang.Number::class.java,
+            juniorestCommonSuperclass(Integer::class.java, java.lang.Double::class.java)
+        )
+        assertEquals(
+            null,
+            juniorestCommonSuperclass(Int::class.java, String::class.java)
         )
     }
 }

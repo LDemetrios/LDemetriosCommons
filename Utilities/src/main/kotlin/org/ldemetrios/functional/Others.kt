@@ -31,7 +31,7 @@ fun <T> map7(it: T) = it is Map<*, *>
 fun <T> last(it: Iterable<T>) = it.lastOrNull()
 fun <T> butlast(it: Iterable<T>): T? {
     when (it) {
-        is List -> return if (it.size < 2) null else it[it.size - 1]
+        is List -> return if (it.size < 2) null else it[it.size - 2]
         else -> {
             val iterator = it.iterator()
             if (!iterator.hasNext())

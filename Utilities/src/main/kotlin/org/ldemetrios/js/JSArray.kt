@@ -1,21 +1,18 @@
+@file:Suppress("unused")
+
 package org.ldemetrios.js
 
-import java.util.*
-
-class JSArray private constructor(private val array: MutableList<JSStuff>) : AbstractMutableList<JSStuff>(),
+@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+class JSArray(array: List<JSStuff>) : AbstractMutableList<JSStuff>(),
     JSStuff, JSContainer {
     constructor(vararg entries: JSStuff) : this(entries.toMutableList())
     constructor() : this(mutableListOf())
 
-    @Deprecated(
-        "May cause interesting special effects",
-        ReplaceWith("explicit type-based conversion")
-    )
-    constructor(vararg entries: Any?) : this(entries.mapTo(mutableListOf()) { it.asJS() })
+    val array: MutableList<JSStuff> = array.toMutableList()
 
     override fun get(ind: Int): JSStuff = if (ind >= 0 && ind < array.size) array[ind] else JSUndefined
 
-    override fun get(ind: String): JSStuff = ind.toIntOrNull()?.let { this[it] } ?: JSUndefined
+    override fun get(ind: String): JSStuff = ind.removeSuffix(".0").toIntOrNull()?.let { this[it] } ?: JSUndefined
 
     override fun set(ind: Int, value: JSStuff): JSStuff {
         if (ind in array.indices) {
@@ -27,7 +24,7 @@ class JSArray private constructor(private val array: MutableList<JSStuff>) : Abs
         return JSUndefined
     }
 
-    override fun set(ind: String, value: JSStuff) = ind.toIntOrNull()?.let { this.set(it, value) } ?: JSUndefined
+    override fun set(ind: String, value: JSStuff) = ind.removeSuffix(".0").toIntOrNull()?.let { this.set(it, value) } ?: JSUndefined
 
     override fun toBoolean(): Boolean = array.isNotEmpty()
     override fun toDouble(): Double = if (array.isEmpty()) 0.0 else 1.0
@@ -38,11 +35,18 @@ class JSArray private constructor(private val array: MutableList<JSStuff>) : Abs
     override fun toString() = toString(0)
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append('[')
-        if (indent == 0) {
+        if (indent == -1) {
+            val iter = array.iterator()
+            if (iter.hasNext()) iter.next().appendTo(sb, -1, 0)
+            while (iter.hasNext()) {
+                sb.append(",")
+                iter.next().appendTo(sb, -1, 0)
+            }
+        } else if (indent == 0) {
             val iter = array.iterator()
             if (iter.hasNext()) iter.next().appendTo(sb, 0, 0)
             while (iter.hasNext()) {
-                sb.append(',')
+                sb.append(", ")
                 iter.next().appendTo(sb, 0, 0)
             }
         } else {
@@ -50,7 +54,7 @@ class JSArray private constructor(private val array: MutableList<JSStuff>) : Abs
                 //Skip
             } else if (size == 1 && this[0].isBamboo()) {
                 sb.append(" ")
-                this[0].appendTo(sb, 0, 0)
+                this[0].appendTo(sb, 1, 0)
                 sb.append(" ")
             } else {
                 sb.append(System.lineSeparator())
@@ -78,7 +82,13 @@ class JSArray private constructor(private val array: MutableList<JSStuff>) : Abs
             "May cause interesting special effects",
             ReplaceWith("explicit type-based conversion")
         )
-        fun ofAny(iterable: Iterable<Any?>) = JSArray(iterable.map { it.asJS() })
+        fun ofAnyList(iterable: Iterable<Any?>) = JSArray(iterable.map { it.asJS() })
+
+        @Deprecated(
+            "May cause interesting special effects",
+            ReplaceWith("explicit type-based conversion")
+        )
+        fun ofAnys(vararg entries: Any?) = JSArray(entries.mapTo(mutableListOf()) { it.asJS() })
     }
 
     override fun add(index: Int, element: JSStuff) = array.add(index, element)

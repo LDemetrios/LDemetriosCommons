@@ -13,7 +13,7 @@ class JSObject private constructor(
     companion object {
         val OBJECT_PROTOTYPE = JSObject(null, mutableMapOf())
 
-        private const val PROTO_KEY = "__proto__"
+        const val PROTO_KEY = "__proto__"
         fun of(map: Map<String, JSStuff>) = if (PROTO_KEY in map) {
             JSObject(map[PROTO_KEY].let {
                 when (it) {
@@ -52,10 +52,10 @@ class JSObject private constructor(
             return res
         }
 
-    override fun get(ind: Int): JSStuff = get(ind.toString())
+    override fun get(ind: Int): JSStuff = get(ind.toDouble().toString())
     override fun get(ind: String): JSStuff = array[ind] ?: __proto__?.get(ind) ?: JSUndefined
 
-    override fun set(ind: Int, value: JSStuff) = set(ind.toString(), value)
+    override fun set(ind: Int, value: JSStuff) = set(ind.toDouble().toString(), value)
     override fun set(ind: String, value: JSStuff) = array.put(ind, value) ?: JSUndefined
 
     override fun toBoolean(): Boolean = array.isNotEmpty()
@@ -76,15 +76,25 @@ class JSObject private constructor(
         sb.append('{')
         val proto = __proto__ ?: JSNull
         if (proto == OBJECT_PROTOTYPE) {
-            if (indent == 0) {
+            if (indent == -1) {
                 val iter = array.iterator()
                 if (iter.hasNext()) {
-                    appendEntry(sb, iter.next(), "\":", 0, 0)
+                    appendEntry(sb, iter.next(), "\":", -1, 0)
                 }
                 while (iter.hasNext()) {
-                    sb.append(',')
+                    sb.append(",")
                     val next = iter.next()
-                    appendEntry(sb, next, "\":", 0, 0)
+                    appendEntry(sb, next, "\":", -1, 0)
+                }
+            } else if (indent == 0) {
+                val iter = array.iterator()
+                if (iter.hasNext()) {
+                    appendEntry(sb, iter.next(), "\" : ", 0, 0)
+                }
+                while (iter.hasNext()) {
+                    sb.append(", ")
+                    val next = iter.next()
+                    appendEntry(sb, next, "\" : ", 0, 0)
                 }
             } else {
                 if (array.size == 0) {
@@ -92,7 +102,7 @@ class JSObject private constructor(
                 } else if (isBamboo()) {
                     sb.append(" ")
                     val next = iterator().next()
-                    appendEntry(sb, next, "\" : ", 0, 0)
+                    appendEntry(sb, next, "\" : ", 1, 0)
                     sb.append(" ")
                 } else {
                     sb.append(System.lineSeparator())
@@ -110,13 +120,21 @@ class JSObject private constructor(
             }
             sb.append('}')
         } else { // proto != null
-            if (indent == 0) {
-                appendEntry(sb, PROTO_KEY, proto, "\":", 0, 0)
+            if (indent == -1) {
+                appendEntry(sb, PROTO_KEY, proto, "\":", -1, 0)
                 val iter = array.iterator()
                 while (iter.hasNext()) {
                     sb.append(',')
                     val next = iter.next()
-                    appendEntry(sb, next, "\":", 0, 0)
+                    appendEntry(sb, next, "\":", -1, 0)
+                }
+            } else if (indent == 0) {
+                appendEntry(sb, PROTO_KEY, proto, "\" : ", 0, 0)
+                val iter = array.iterator()
+                while (iter.hasNext()) {
+                    sb.append(", ")
+                    val next = iter.next()
+                    appendEntry(sb, next, "\" : ", 0, 0)
                 }
             } else {
                 if (array.size == 0) {
@@ -157,7 +175,7 @@ class JSObject private constructor(
         sb: StringBuilder, key: String, value: JSStuff, separ: String, indent: Int, curIndent: Int
     ) {
         sb.append('"')
-        sb.append(key)
+        sb.append(key.escape())
         sb.append(separ)
         value.appendTo(sb, indent, curIndent)
     }

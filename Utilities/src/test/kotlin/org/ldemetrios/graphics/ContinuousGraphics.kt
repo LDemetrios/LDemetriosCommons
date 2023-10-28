@@ -32,5 +32,4 @@ fun main() {
         isVisible = true
         maximize()
     }
-
 }

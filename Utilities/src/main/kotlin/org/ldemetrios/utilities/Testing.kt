@@ -36,3 +36,7 @@ fun <T> Assertions_assertEqualLists(expected: Iterable<T>, actual: Iterable<T>) 
         )
     }
 }
+
+fun Assertions_assertMatches(rgx: Regex, actual: String) {
+    Assertions.assertTrue(rgx.matches(actual)) { "$actual should match $rgx"}
+}
