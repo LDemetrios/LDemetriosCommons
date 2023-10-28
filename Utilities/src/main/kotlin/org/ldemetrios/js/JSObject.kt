@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.ldemetrios.js
 
 import java.lang.IllegalArgumentException
@@ -5,6 +7,7 @@ import java.lang.UnsupportedOperationException
 import java.util.function.BiFunction
 
 
+@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
 class JSObject private constructor(
     var __proto__: JSObject?,
     private val array: MutableMap<String, JSStuff>
@@ -163,7 +166,7 @@ class JSObject private constructor(
         sb.append(" ".repeat(curIndent))
     }
 
-    private inline fun appendEntry(
+    private fun appendEntry(
         sb: StringBuilder,
         next: MutableMap.MutableEntry<String, JSStuff>,
         separ: String, indent: Int, curIndent: Int
@@ -171,7 +174,7 @@ class JSObject private constructor(
         appendEntry(sb, next.key, next.value, separ, indent, curIndent)
     }
 
-    private inline fun appendEntry(
+    private fun appendEntry(
         sb: StringBuilder, key: String, value: JSStuff, separ: String, indent: Int, curIndent: Int
     ) {
         sb.append('"')
@@ -228,11 +231,13 @@ class JSObject private constructor(
 
                 override fun next(): T {
                     cur = iter.next()
+                    @Suppress("UNCHECKED_CAST")
                     return cur as T
                 }
 
                 override fun remove() {
                     iter.remove()
+                    @Suppress("UNCHECKED_CAST")
                     remove(cur as T)
                 }
             }

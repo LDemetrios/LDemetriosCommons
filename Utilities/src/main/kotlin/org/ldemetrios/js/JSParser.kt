@@ -139,7 +139,7 @@ class JSParser(val string: String) {
             expect('"')
             skipWs()
             expect(':')
-            val value = parseValue()
+            @Suppress("NAME_SHADOWING") val value = parseValue()
             if (key == JSObject.PROTO_KEY) {
                 res.__proto__ = value as JSObject
             } else {
