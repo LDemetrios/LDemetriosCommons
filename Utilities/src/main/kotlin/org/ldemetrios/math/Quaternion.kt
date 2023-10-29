@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.ldemetrios.math
 
 data class Quaternion(val scalar: Double, val vector: Vector3D) {

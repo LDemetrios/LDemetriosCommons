@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.ldemetrios.math
 
 import kotlin.math.acos
