@@ -1,8 +1,9 @@
 @file:Suppress("PackageDirectoryMismatch", "unused")
 @file:JvmName("Terminal")
 
-package org.ldemetrios.utilities
+package org.ldemetrios.bash
 
+import org.ldemetrios.utilities.Delayed
 import org.ldemetrios.utilities.constants.NEWLINES
 import java.io.OutputStream
 import java.io.PrintStream
