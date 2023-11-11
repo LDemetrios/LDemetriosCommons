@@ -6,7 +6,7 @@ import kotlinx.coroutines.channels.*
 /////////////////////////////////////////////////////////////////
 
 // Default usage is, by the way, <String, String>
-class PipelineContext<out I, in O>(val input: ReceiveChannel<I>, val output: SendChannel<O>) {
+class PipelineContext<out I, in O>(val input: ReceiveChannel<I>, val output: SendChannel<O>, val scope: CoroutineScope) : CoroutineScope by scope {
     suspend fun receive(): I = input.receive()
 
     suspend fun send(out: O) = output.send(out)
@@ -35,56 +35,64 @@ fun <I, O> line(block: suspend PipelineContext<I, O>.() -> Unit): Conduit<I, O> 
     it.output.close()
 }
 
-fun <I, O> `$`(block: suspend PipelineContext<I, O>.() -> Unit) = line(block).also { println("Line created") }
+fun <O> `$`(block: suspend PipelineContext<Nothing, O>.() -> Unit) = line(block)
 
-lateinit var globalScope : CoroutineScope
-
-fun <I, M, O> Conduit<I, M>.pipe(second: Conduit<M, O>): Conduit<I, O> = `$` {
-    println("Pipe began")
-    val pipe = Channel<M>()
-   globalScope.launch { this@pipe(PipelineContext(input, pipe)) }
-    second(PipelineContext(pipe, output))
+fun <I, M, O> Conduit<I, M>.pipe(second: Conduit<M, O>): Conduit<I, O> = line {
+    val pipe = Channel<M>(3)
+    val job = launch { this@pipe(PipelineContext(input, pipe, this)) }
+    second(PipelineContext(pipe, output, this.scope))
+    job.cancel()
 }
+
+fun <I, M, O> Conduit<I, M>.pipe(block: suspend PipelineContext<M, O>.() -> Unit): Conduit<I, O> = pipe(line(block))
+fun <I, M> Conduit<I, M>.pipe(rinser: Rinser): List<M> = rinse()
 
 infix fun <I, M, O> Conduit<I, M>.`|`(second: Conduit<M, O>): Conduit<I, O> = pipe(second)
 
-suspend fun <I, O> Conduit<I, O>.flow() : List<O> {
+infix fun <I, M, O> Conduit<I, M>.`|`(block: suspend PipelineContext<M, O>.() -> Unit): Conduit<I, O> = pipe(block)
+infix fun <I, M> Conduit<I, M>.`|`(rinser: Rinser): List<M> = pipe(rinser)
+
+suspend fun <I, O> Conduit<I, O>.flow(scope: CoroutineScope): List<O> {
     val inp = Channel<I>()
     inp.close()
     val outp = Channel<O>()
-    this(PipelineContext(inp, outp))
+    scope.launch {
+        this@flow(PipelineContext(inp, outp, this))
+    }
     return outp.toList()
 }
 
-suspend fun <I, O> Conduit<I, O>.`!`() = flow()
+val <I, O> Conduit<I, O>.`!` get() = rinse()
+
+object Rinser
+
+val `!` = Rinser
 
 fun <I, O> Conduit<I, O>.rinse() = runBlocking {
-    globalScope = this
-    flow()
+    flow(this)
 }
 
 /////////////////////////////////////////////////////////////////
 
 fun main() {
-    (`$`<Any?, String> {
-        println("First began")
-        echo("1")
-        println("First echoed")
-        echo("2")
-        println("First ended")
-    } `|` `$`<String, String> {
-        println("Second began")
-        for(i in input){
-            println(i)
+    val x = `$` {
+        for (i in 0 until Int.MAX_VALUE) {
+            send(i)
         }
-        println("Second ended")
-    }).rinse()
+    } `|` {
+        var lim = 0
+        for (i in input) {
+            send(i * i)
+            if (lim++ == 5) break
+        }
+    } `|` `!`
+    println(x)
 }
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun CoroutineScope.produceNumbers() = produce {
-    var x = 1
+    var x = 14
     while (true) send(x++) // infinite stream of integers starting from 1
 }
 

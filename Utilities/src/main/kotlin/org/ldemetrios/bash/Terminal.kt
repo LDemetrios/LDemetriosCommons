@@ -21,8 +21,17 @@ class PrefixedOutput(val prefix: String, private val underlying: PrintStream) : 
     private var rPassed = false
     override fun write(p0: Int) {
         if (rPassed) {
+            rPassed = false
             when (p0) {
-                LF_CODE -> underlying.print("$prefix$sb\r\n")
+                LF_CODE -> {
+                    underlying.print("$prefix$sb\r\n")
+                    sb = StringBuilder()
+                }
+                CR_CODE -> {
+                    underlying.print("$prefix$sb\r")
+                    sb = StringBuilder()
+                    rPassed = true
+                }
                 in NEWLINE_CODES -> {
                     underlying.print("$prefix$sb\r$prefix${p0.toChar()}")
                     sb = StringBuilder()
@@ -55,31 +64,35 @@ class PrefixedOutput(val prefix: String, private val underlying: PrintStream) : 
     }
 }
 
+fun main(){
+    println(execute("ls", "-Ali", print = false, doReturn = true).get())
+}
 
 @JvmOverloads
 fun execute(
     vararg command: String,
     parallel: Boolean = false,
     out: OutputStream? = null,
+    print: Boolean = true,
     doReturn: Boolean = false
 ): Delayed<String> {
     val id = count.getAndIncrement()
     @Suppress("NAME_SHADOWING") val out = out ?: PrefixedOutput("Terminal$id: ", System.out)
     if (parallel) {
-        lateinit var result: String
+        var result: String? = null
         val thread = Thread {
-            val res = execute0(id, out, doReturn, *command)
+            val res = execute0(id, out, doReturn, print, *command)
             if (res != null) result = res
         }
         thread.start()
         return object : Delayed<String>() {
             override fun compute(): String {
                 thread.join()
-                return result
+                return result!!
             }
         }
     } else {
-        val res = execute0(id, out, doReturn, *command)
+        val res = execute0(id, out,  doReturn, print, *command)
         return object : Delayed<String>() {
             override fun compute(): String {
                 return res!!
@@ -88,19 +101,19 @@ fun execute(
     }
 }
 
-private fun execute0(id: Int, outStr: OutputStream, keep: Boolean, vararg command: String): String? {
+private fun execute0(id: Int, outStr: OutputStream, keep: Boolean, print:Boolean, vararg command: String): String? {
     val output = StringBuilder()
-    println("Run Terminal$id")
+    if(print) println("Run Terminal$id")
     val builder = ProcessBuilder(*command)
     builder.redirectErrorStream(true)
     val process = builder.start()
     val stdout = process.inputStream
     var ch: Int
     while (stdout.read().also { ch = it } != -1) {
-        outStr.write(ch)
+        if (print) outStr.write(ch)
         if (keep) output.append(ch.toChar())
     }
     process.waitFor()
-    println("Terminal$id exited")
+    if(print) println("Terminal$id exited")
     return if (keep) output.toString() else null
 }
