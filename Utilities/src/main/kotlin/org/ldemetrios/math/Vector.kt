@@ -61,6 +61,7 @@ operator fun Number.times(v: Vector3D) = v * this
 
 data class Vector(val list: List<Double>) {
     constructor(vararg list: Double) : this(list.toList())
+    constructor(n : Int, gen:(Int) -> Double) : this(List(n, gen))
 
     operator fun plus(other: Vector) = Vector(list.zip(other.list).map { it.first + it.second })
 
@@ -77,6 +78,8 @@ data class Vector(val list: List<Double>) {
     operator fun get(index: Int) = list[index]
 
     infix fun dot(other: Vector) = list.zip(other.list).sumOf { it.first * it.second }
+
+    val dimension get() = list.size
 }
 
 operator fun Number.times(v: Vector) = v * this

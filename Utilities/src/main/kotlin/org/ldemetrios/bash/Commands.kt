@@ -13,7 +13,6 @@ fun <T> head(n: Int): Conduit<T, T> = line {
     }
 }
 
-
 private const val CR_CODE = '\r'.code
 private const val LF_CODE = '\n'.code
 private val NEWLINE_CODES = NEWLINES.map(Char::code)
@@ -82,7 +81,7 @@ fun bash(vararg command: String): Conduit<String, String>  = line{
     }
     process.waitFor()
 }
-
-fun main() {
-    println(bash("ls", "-Ali") `|` bash("wc", "-l") `|` `!`)
-}
+//
+//fun main() {
+//    println(bash("ls", "-Ali") `|` bash("wc", "-l") `|` `!`)
+//}

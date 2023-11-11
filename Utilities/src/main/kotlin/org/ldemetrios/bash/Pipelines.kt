@@ -73,21 +73,19 @@ fun <I, O> Conduit<I, O>.rinse() = runBlocking {
 }
 
 /////////////////////////////////////////////////////////////////
-
-fun main() {
-    val x = `$` {
-        for (i in 0 until Int.MAX_VALUE) {
-            send(i)
-        }
-    } `|` {
-        var lim = 0
-        for (i in input) {
-            send(i * i)
-            if (lim++ == 5) break
-        }
-    } `|` `!`
-    println(x)
-}
+//
+//fun main() {
+//    val x = `$` {
+//        for (i in 0 until Int.MAX_VALUE) {
+//            send(i)
+//        }
+//    } `|` head(5) `|` {
+//        for (i in input) {
+//            send(i * i)
+//        }
+//    } `|` `!`
+//    println(x)
+//}
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
