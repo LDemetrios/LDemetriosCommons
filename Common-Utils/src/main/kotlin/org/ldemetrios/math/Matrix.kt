@@ -22,9 +22,9 @@ class Matrix(val table: List<DoubleArray>) {
 
     override fun toString(): String {
         val pad = List(columns) { c -> table.maxOf { it[c].toString().length } }
-        return table.joinToString("(\n", "\n)", "\n") { row ->
-            row.mapIndexed { i, v ->
-                v.toString().padStart(pad[i])
+        return table.joinToString( "\n", "(\n", "\n)",) { row ->
+            "\t\t" + row.mapIndexed { i, v ->
+                v.toString().padStart(pad[i] + 2)
             }.joinToString(" ")
         }
     }
@@ -102,4 +102,16 @@ class Matrix(val table: List<DoubleArray>) {
             return Matrix(size, size) { _, _ -> 0.0 }
         }
     }
+}
+
+fun main(){
+    println(
+                Matrix(
+                    listOf(
+                        doubleArrayOf(11.0, 2.0),
+                        doubleArrayOf(3.0, 4.0),
+                        doubleArrayOf(5.0, 6.0)
+                    )
+                )
+    )
 }
