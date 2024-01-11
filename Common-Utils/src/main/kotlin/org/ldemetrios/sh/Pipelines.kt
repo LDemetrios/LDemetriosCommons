@@ -1,4 +1,4 @@
-package org.ldemetrios.bash
+package org.ldemetrios.sh
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
@@ -10,16 +10,6 @@ class PipelineContext<out I, in O>(val input: ReceiveChannel<I>, val output: Sen
     suspend fun receive(): I = input.receive()
 
     suspend fun send(out: O) = output.send(out)
-}
-
-private val contextMap = mutableMapOf<PipelineContext<*, String>, String>()
-
-suspend fun <I> PipelineContext<I, String>.echo(message: String = "") {
-    send((contextMap.replace(this, "") ?: "") + message)
-}
-
-fun <I> PipelineContext<I, String>.echo_n(message: String) {
-    contextMap.compute(this) { _, value -> (value ?: "") + message }
 }
 
 suspend fun <O> PipelineContext<String, O>.read() = receive().split(" \t").filter { it.isNotBlank() }
@@ -47,10 +37,11 @@ fun <I, M, O> Conduit<I, M>.pipe(second: Conduit<M, O>): Conduit<I, O> = line {
 fun <I, M, O> Conduit<I, M>.pipe(block: suspend PipelineContext<M, O>.() -> Unit): Conduit<I, O> = pipe(line(block))
 fun <I, M> Conduit<I, M>.pipe(rinser: Rinser): List<M> = rinse()
 
-infix fun <I, M, O> Conduit<I, M>.`|`(second: Conduit<M, O>): Conduit<I, O> = pipe(second)
+operator fun <I, M, O> Conduit<I, M>.div(second: Conduit<M, O>): Conduit<I, O> = pipe(second)
 
-infix fun <I, M, O> Conduit<I, M>.`|`(block: suspend PipelineContext<M, O>.() -> Unit): Conduit<I, O> = pipe(block)
-infix fun <I, M> Conduit<I, M>.`|`(rinser: Rinser): List<M> = pipe(rinser)
+operator fun <I, M, O> Conduit<I, M>.div(block: suspend PipelineContext<M, O>.() -> Unit): Conduit<I, O> = pipe(block)
+operator fun <I, M> Conduit<I, M>.div(rinser: Rinser): List<M> = pipe(rinser)
+
 
 suspend fun <I, O> Conduit<I, O>.flow(scope: CoroutineScope): List<O> {
     val inp = Channel<I>()
@@ -62,8 +53,6 @@ suspend fun <I, O> Conduit<I, O>.flow(scope: CoroutineScope): List<O> {
     return outp.toList()
 }
 
-val <I, O> Conduit<I, O>.`!` get() = rinse()
-
 object Rinser
 
 val `!` = Rinser
@@ -72,30 +61,16 @@ fun <I, O> Conduit<I, O>.rinse() = runBlocking {
     flow(this)
 }
 
-/////////////////////////////////////////////////////////////////
-//
-//fun main() {
-//    val x = `$` {
-//        for (i in 0 until Int.MAX_VALUE) {
-//            send(i)
-//        }
-//    } `|` head(5) `|` {
-//        for (i in input) {
-//            send(i * i)
-//        }
-//    } `|` `!`
-//    println(x)
-//}
 
+data class Cat<I, O>(val context: PipelineContext<I, O>);
+val <I, O> PipelineContext<I, O>.cat get() = Cat(this)
 
-@OptIn(ExperimentalCoroutinesApi::class)
-fun CoroutineScope.produceNumbers() = produce {
-    var x = 14
-    while (true) send(x++) // infinite stream of integers starting from 1
+suspend operator fun <I, O> Conduit<Nothing, O>.div(cat: Cat<I, O>) {
+    this / {
+        for (e in input) cat.context.send(e)
+        send(null)
+    } / `!`
 }
 
-
-fun CoroutineScope.square(numbers: ReceiveChannel<Int>): ReceiveChannel<Int> = produce {
-    for (x in numbers) send(x * x)
-}
-
+operator fun <T, R> T.rem(func:(T) -> R) = func(this)
+suspend operator fun <T, R> T.rem(func:suspend (T) -> R) = func(this)

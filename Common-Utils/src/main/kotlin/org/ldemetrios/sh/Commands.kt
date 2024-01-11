@@ -1,17 +1,6 @@
-package org.ldemetrios.bash
+package org.ldemetrios.sh
 
-import kotlinx.coroutines.launch
 import org.ldemetrios.utilities.constants.NEWLINES
-import java.io.OutputStream
-import java.io.PrintStream
-
-fun <T> head(n: Int): Conduit<T, T> = line {
-    var lim = 0;
-    for (e in input) {
-        if (lim++ >= n) break
-        output.send(e)
-    }
-}
 
 private const val CR_CODE = '\r'.code
 private const val LF_CODE = '\n'.code
@@ -62,7 +51,7 @@ class SendingOutput(private val sender: suspend (String) -> Unit) {
     }
 }
 
-fun bash(vararg command: String): Conduit<String, String>  = line{
+fun terminal(vararg command: String): Conduit<String, String> = line {
     val output = SendingOutput(this::send)
     val builder = ProcessBuilder(*command)
     builder.redirectErrorStream(true)
@@ -81,7 +70,41 @@ fun bash(vararg command: String): Conduit<String, String>  = line{
     }
     process.waitFor()
 }
-//
-//fun main() {
-//    println(bash("ls", "-Ali") `|` bash("wc", "-l") `|` `!`)
-//}
+
+fun main() {
+    val x = `$` {
+        for (i in 0 until Int.MAX_VALUE) {
+            send(i)
+        }
+    } / taking(5) / {
+        for (i in input) {
+            send(i * i)
+        }
+    } / `!`
+    println(x)
+
+    println(terminal("ls", "-Ali") / terminal("wc", "-l") / `!`)
+
+    `$` {
+        val infinite = `$` {
+            for (i in 0 until Int.MAX_VALUE) {
+                send(i)
+            }
+        } / taking(5)
+
+        infinite / {
+            for (i in input) {
+                send(i * i)
+            }
+        } / cat
+
+        send(0)
+        -1 % ::send
+            
+        infinite / {
+            for (i in input) {
+                send(i * i * i)
+            }
+        } / cat
+    } / `!` % ::println
+}

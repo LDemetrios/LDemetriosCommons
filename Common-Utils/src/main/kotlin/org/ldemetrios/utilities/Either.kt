@@ -39,7 +39,10 @@ sealed interface Either<out L, out R> {
     fun <NL> mapLeft(transform: (L) -> NL): Either<NL, R> = map(transform, identity())
     fun <NR> mapRight(transform: (R) -> NR): Either<L, NR> = map(identity(), transform)
 
-    fun <T> flatMap(left: (L) -> Either<@UnsafeVariance L, T>, right: (R) -> Either<@UnsafeVariance L, T>): Either<L, T> = when {
+    fun <T> flatMap(
+        left: (L) -> Either<@UnsafeVariance L, T>,
+        right: (R) -> Either<@UnsafeVariance L, T>
+    ): Either<L, T> = when {
         isLeft() -> left(getLeft()!!)
         isRight() -> right(getRight()!!)
         else -> throw IllegalStateException()
@@ -50,6 +53,7 @@ sealed interface Either<out L, out R> {
         override fun isRight(): Boolean = false
         override fun getLeft(): L = value
         override fun getRight(): Nothing = throw IllegalStateException()
+        override fun toString(): String = value.toString()
     }
 
     class Right<R>(private val value: R) : Either<Nothing, R> {
@@ -57,6 +61,7 @@ sealed interface Either<out L, out R> {
         override fun isRight(): Boolean = true
         override fun getLeft(): Nothing = throw IllegalStateException()
         override fun getRight(): R = value
+        override fun toString(): String = value.toString()
     }
 }
 

@@ -93,6 +93,8 @@ class Matrix(val table: List<DoubleArray>) {
         return Matrix(rows, columns) { i, j -> table[i][j] / scalar }
     }
 
+
+
     companion object {
         fun identity(size: Int): Matrix {
             return Matrix(size, size) { i, j -> if (i == j) 1.0 else 0.0 }
@@ -106,12 +108,12 @@ class Matrix(val table: List<DoubleArray>) {
 
 fun main(){
     println(
-                Matrix(
-                    listOf(
-                        doubleArrayOf(11.0, 2.0),
-                        doubleArrayOf(3.0, 4.0),
-                        doubleArrayOf(5.0, 6.0)
-                    )
-                )
+        Matrix(
+            listOf(
+                doubleArrayOf(11.0, 2.0),
+                doubleArrayOf(3.0, 4.0),
+                doubleArrayOf(5.0, 6.0)
+            )
+        )
     )
 }

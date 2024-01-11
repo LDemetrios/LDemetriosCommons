@@ -1,10 +1,12 @@
 @file:Suppress("PackageDirectoryMismatch", "unused")
 @file:JvmName("Terminal")
 
-package org.ldemetrios.bash
+package org.ldemetrios.sh
 
 import org.ldemetrios.utilities.Delayed
 import org.ldemetrios.utilities.constants.NEWLINES
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.io.OutputStream
 import java.io.PrintStream
 import java.util.concurrent.atomic.AtomicInteger
@@ -109,6 +111,9 @@ private fun execute0(id: Int, outStr: OutputStream, keep: Boolean, print:Boolean
     val process = builder.start()
     val stdout = process.inputStream
     var ch: Int
+
+//    val buffered = BufferedReader(InputStreamReader(stdout))
+//    buffered.ready()
     while (stdout.read().also { ch = it } != -1) {
         if (print) outStr.write(ch)
         if (keep) output.append(ch.toChar())
