@@ -100,7 +100,7 @@ internal fun String.escape() =
         .replace("\r", "\\r")
         .replace("\t", "\\t")
 
-data class JSString(private val str: String) : JSStuff {
+data class JSString(val str: String) : JSStuff {
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append('"')
         sb.append(            str.escape()        )
