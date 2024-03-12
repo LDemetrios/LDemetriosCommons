@@ -3,6 +3,7 @@
 package org.ldemetrios.js
 import org.ldemetrios.utilities.cast
 import java.lang.StringBuilder
+import java.math.BigDecimal
 import java.text.ParseException
 import kotlin.math.min
 
@@ -148,7 +149,7 @@ class JSParser(val string: String) {
         return res
     }
 
-    private fun parseNumber(): Double {
+    private fun parseNumber(): BigDecimal {
         val sb = StringBuilder()
         if (peek() == '-') sb.append(pop())
         while (pos < string.length && (peek() in '0'..'9')) sb.append(pop())
@@ -161,7 +162,7 @@ class JSParser(val string: String) {
             if (peek() == '-' || peek() == '+') sb.append(pop())
             while (pos < string.length && (peek() in '0'..'9')) sb.append(pop())
         }
-        return sb.toString().toDouble()
+        return sb.toString().toBigDecimal()
     }
 
     companion object {

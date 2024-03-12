@@ -28,6 +28,7 @@ class JSArray(array: List<JSStuff>) : AbstractMutableList<JSStuff>(),
 
     override fun toBoolean(): Boolean = array.isNotEmpty()
     override fun toDouble(): Double = if (array.isEmpty()) 0.0 else 1.0
+    override fun toLong(): Long = if (array.isEmpty()) 0L else 1L
 
     override fun add(element: JSStuff): Boolean = array.add(element)
     override val size: Int get() = array.size

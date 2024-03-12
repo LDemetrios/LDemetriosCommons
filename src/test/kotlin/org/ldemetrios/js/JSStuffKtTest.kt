@@ -96,9 +96,9 @@ class JSStuffKtTest {
     @Test
     fun jsNumber() {
         assertEquals(1.0, JSNumber(1.0).toDouble())
-        assertEquals("1.0", JSNumber(1.0).toString())
-        assertEquals("1.0", JSNumber(1.0).toString(4))
-        assertEquals("-1.0", JSNumber(-1.0).toString(4))
+        assertEquals("1", JSNumber(1.0).toString())
+        assertEquals("1", JSNumber(1.0).toString(4))
+        assertEquals("-1", JSNumber(-1.0).toString(4))
         assertEquals(JSUndefined, JSNumber(1.0)[0])
         assertEquals(JSUndefined, JSNumber(1.0)["abc"])
         assertEquals(JSUndefined, JSNumber(1.0)[JSTrue])

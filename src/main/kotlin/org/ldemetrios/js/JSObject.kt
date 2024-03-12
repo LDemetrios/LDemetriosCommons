@@ -63,6 +63,7 @@ class JSObject private constructor(
 
     override fun toBoolean(): Boolean = array.isNotEmpty()
     override fun toDouble(): Double = if (array.isEmpty()) 0.0 else 1.0
+    override fun toLong(): Long = if (array.isEmpty()) 0L else 1L
 
     override fun put(key: String, value: JSStuff): JSStuff? = array.put(key, value)
 

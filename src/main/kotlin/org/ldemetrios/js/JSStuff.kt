@@ -2,6 +2,9 @@
 
 package org.ldemetrios.js
 
+import java.math.BigDecimal
+import java.math.RoundingMode
+
 @Deprecated(
     "May cause interesting special effects",
     ReplaceWith("explicit type-based conversion")
@@ -10,7 +13,7 @@ fun Any?.asJS(): JSStuff = when (this) {
     null -> JSNull
     true -> JSTrue
     false -> JSFalse
-    is Number -> JSNumber(toDouble())
+    is Number -> this.js
     is String -> JSString(this)
     is Map<*, *> -> JSObject.ofAny(mapKeys { it.toString() })
     is Iterable<*> -> JSArray.ofAnyList(this)
@@ -31,7 +34,7 @@ interface JSStuff {
     operator fun get(ind: Any?): JSStuff = get(ind.toString())
 
     fun toBoolean(): Boolean
-    fun toInt(): Int = toDouble().toInt()
+    fun toLong(): Long
     fun toDouble(): Double
 }
 
@@ -47,6 +50,7 @@ enum class JSBoolean(private val b: Boolean) : JSPrimitive {
     override fun toBoolean(): Boolean = b
     override fun toString(indent: Int): String = b.toString()
     override fun toDouble(): Double = if (b) 1.0 else 0.0
+    override fun toLong(): Long = if (b) 1 else 0
     override fun toString() = toString(0)
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append(b)
@@ -64,6 +68,7 @@ object JSUndefined : JSPrimitive {
     override fun toString(indent: Int): String = "undefined"
     override fun toBoolean(): Boolean = false
     override fun toDouble(): Double = 0.0
+    override fun toLong(): Long = 0L
     override fun toString() = toString(0)
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append("undefined")
@@ -74,20 +79,31 @@ object JSNull : JSPrimitive {
     override fun toString(indent: Int): String = "null"
     override fun toBoolean(): Boolean = false
     override fun toDouble(): Double = 0.0
+    override fun toLong(): Long = 0L
     override fun toString() = toString(0)
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append("null")
     }
 }
 
-data class JSNumber(private val number: Double) : JSPrimitive {
+data class JSNumber(private val number: BigDecimal) : JSPrimitive {
+    constructor(number: Double) : this(BigDecimal(number))
+    constructor(number: Long) : this(BigDecimal(number))
+    constructor(number: Int) : this(BigDecimal(number))
+
     override fun toString(indent: Int): String = number.toString()
-    override fun toBoolean(): Boolean = number != 0.0 && number != -0.0
-    override fun toDouble(): Double = number
+    override fun toBoolean(): Boolean = number.signum() != 0
+    override fun toDouble(): Double = number.toDouble()
+    override fun toLong(): Long = number.toLong()
     override fun toString() = toString(0)
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append(number.toString())
     }
+
+    override fun equals(other: Any?): Boolean =
+        (this === other) ||  other is JSNumber && number.compareTo(other.number) == 0
+
+    override fun hashCode(): Int = number.toBigInteger().hashCode()
 }
 
 internal fun String.escape() =
@@ -103,7 +119,7 @@ internal fun String.escape() =
 data class JSString(val str: String) : JSStuff {
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append('"')
-        sb.append(            str.escape()        )
+        sb.append(str.escape())
         sb.append('"')
     }
 
@@ -116,6 +132,7 @@ data class JSString(val str: String) : JSStuff {
 
     override fun toBoolean(): Boolean = str.isBlank() || str == "false" || str == "0"
     override fun toDouble(): Double = str.toDouble()
+    override fun toLong(): Long = str.toLong()
     override fun toString() = toString(0)
 }
 
@@ -131,7 +148,7 @@ interface JSContainer : JSStuff {
     operator fun set(ind: Any?, value: JSStuff) = set(ind.toString(), value)
 }
 
-val Number.js get() = JSNumber(toDouble())
+val Number.js get() = JSNumber(if (this is Long) toBigDecimal() else toDouble().toBigDecimal())
 val Boolean.js get() = JSBoolean.of(this)
 val String.js get() = JSString(this)
 operator fun JSStuff?.get(ind: Int): JSStuff = if (this === null) JSNull else this[ind]
