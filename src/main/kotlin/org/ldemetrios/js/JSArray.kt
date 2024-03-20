@@ -67,7 +67,7 @@ class JSArray(array: List<JSStuff>) : AbstractMutableList<JSStuff>(),
                     sb.append(',')
                     sb.append(System.lineSeparator())
                     sb.append(" ".repeat(newIndent))
-                    iter.next().appendTo(sb, 0, 0)
+                    iter.next().appendTo(sb, indent, newIndent)
                 }
                 sb.append(System.lineSeparator())
                 sb.append(" ".repeat(curIndent))
