@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "org.ldemetrios"
-version = "1.0"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -191,9 +191,9 @@ fun registerTasksGraph(name:String, filename:String, descr:String, doSimplify: B
 registerTasksGraph("tasksGraph", "project.dot", "graph tasks using gviz", false)
 registerTasksGraph("tasksGraphClean", "project-clean.dot", "graph tasks using gviz without redundant edges", true)
 
-tasks.named("compileKotlin") {
-    dependsOn("codegen")
-}
+//tasks.named("compileKotlin") {
+//    dependsOn("codegen")
+//}
 
 tasks.named("jar") {
     dependsOn("test")
