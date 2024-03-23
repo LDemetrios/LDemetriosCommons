@@ -9,6 +9,7 @@ It is not properly tested yet, ergo version is `0.1.0`.
 
 ```bash
 git clone https://github.com/LDemetrios/LDemetriosCommons.git
+cd LDemetriosCommons
 gradle publish
 ```
 
