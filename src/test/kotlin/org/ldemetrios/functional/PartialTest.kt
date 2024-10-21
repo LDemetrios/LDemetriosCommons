@@ -1,12 +1,20 @@
 package org.ldemetrios.functional
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
 import org.junit.jupiter.api.Assertions.*
+import kotlin.reflect.typeOf
 
-class PartialTest {
-    @Test
-    fun get() {
-        assertEquals(listOf(2,4), List<Int>::filter[U, {it % 2 == 0}](listOf(1,2,3,4,5)))
+
+private inline fun <reified T> type(x:T) = typeOf<T>()
+
+class `Partial Test` : FreeSpec({
+    "get" {
+        val f = List<Int>::filter[U, { it % 2 == 0 }] // Autoinferring type is important
+
+        type(f) shouldBe typeOf<(List<Int>) -> List<Int>>()
+
+        f(listOf(1, 2, 3, 4, 5)) shouldBe listOf(2, 4)
     }
-}
+})

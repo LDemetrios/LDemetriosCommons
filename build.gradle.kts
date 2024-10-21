@@ -4,12 +4,10 @@ plugins {
     kotlin("jvm") version "1.9.21"
     `java-library`
     `maven-publish`
-//    id("org.jetbrains.kotlin.jvm") version "1.7.21"
-
 }
 
 group = "org.ldemetrios"
-version = "0.1.0"
+version = "0.1.2"
 
 repositories {
     mavenCentral()
@@ -17,14 +15,19 @@ repositories {
     maven {
         url = uri("https://repo.maven.apache.org/maven2/")
     }
+    maven {
+        url = uri("https://www.jetbrains.com/intellij-repository/releases/")
+    }
 }
 
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.21")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:5.6.2")
-    testImplementation("io.kotest:kotest-property-jvm:5.6.2")
+    implementation("io.kotest:kotest-assertions-core-jvm:5.7.0")
+    implementation("io.kotest:kotest-property-jvm:5.7.0")
+    implementation("io.kotest:kotest-runner-junit5:5.7.0")
+    implementation("io.kotest:kotest-framework-datatest:5.7.0")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
@@ -35,10 +38,9 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.7.21")
     implementation("io.github.kscripting:kscript-annotations:1.5.0")
-//    implementation("com.github.holgerbrandl:kutils:0.12")
-}
 
-//java.sourceCompatibility = JavaVersion.VERSION_1_8
+//    implementation("com.jetbrains.intellij.java:java-decompiler-engine:242.22855.74")
+}
 
 operator fun String.invoke(vararg args: String): List<String> {
     val out = ByteArrayOutputStream()
@@ -222,4 +224,10 @@ tasks.test {
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-Xcontext-receivers"
+    }
 }

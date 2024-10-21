@@ -1,11 +1,10 @@
 package org.ldemetrios.utilities
 
 
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
+import java.io.*
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
+
 
 class TerminalException(val errorCode: Int, message: String) : RuntimeException(message)
 
@@ -15,17 +14,26 @@ data class ExecResult(
     val returnCode: Int
 )
 
-fun exec(command: List<String>, input: String? = null, root: File? = null, timeout: Long = -1): ExecResult {
+fun exec(command: List<String>, input: Reader? = null, root: File? = null, timeout: Long = -1): ExecResult {
     val builder = ProcessBuilder(command)
     if (root != null) builder.directory(root)
     val process = builder.start()
 
-    if (input != null) process.outputStream.write(input.toByteArray())
+    val processInput = process.outputStream
+    if (input != null) {
+        OutputStreamWriter(processInput).use { writer ->
+            val buffer = CharArray(8192)
+            var charsRead: Int
+            while ((input.read(buffer).also { charsRead = it }) != -1) {
+                writer.write(buffer, 0, charsRead)
+            }
+            writer.flush()
+        }
+    }
     process.outputStream.close()
 
     val processOutput = BufferedReader(InputStreamReader(process.inputStream))
     val processError = BufferedReader(InputStreamReader(process.errorStream))
-
 
     val ex = if (timeout < 0) process.waitFor() else {
         process.waitFor(timeout, TimeUnit.MILLISECONDS);

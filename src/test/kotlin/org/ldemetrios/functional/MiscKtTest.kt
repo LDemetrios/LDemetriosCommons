@@ -1,59 +1,52 @@
 package org.ldemetrios.functional
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
-import org.junit.jupiter.api.Assertions.*
-
-class OthersKtTest {
-
-    @Test
-    fun cons() {
-        assertEquals(listOf(1, 2, 3, 4), cons(1, listOf(2, 3, 4)))
+class `MiscKt Test` : FreeSpec({
+    "cons" {
+        cons(1, listOf(2, 3, 4)) shouldBe listOf(1, 2, 3, 4)
     }
 
-    @Test
-    fun first() {
-        assertEquals(1, first(listOf(1, 2, 3, 4)))
+    "first" {
+        first(listOf(1, 2, 3, 4)) shouldBe 1
     }
 
-    @Test
-    operator fun next() {
-        assertEquals(listOf(2, 3, 4), next(listOf(1, 2, 3, 4)))
-        assertEquals(listOf(2, 3), next(listOf(1, 2, 3)))
-        assertEquals(listOf(2), next(listOf(1, 2)))
-        assertEquals(null, next(listOf(1)))
-        assertEquals(null, next(listOf<Int>()))
+    "next" {
+        next(listOf(1, 2, 3, 4)) shouldBe listOf(2, 3, 4);
+        next(listOf(1, 2, 3)) shouldBe listOf(2, 3);
+        next(listOf(1, 2)) shouldBe listOf(2);
+        next(listOf(1)) shouldBe null
+        next(listOf<Int>()) shouldBe null
     }
 
-    @Test
-    fun rest() {
-        assertEquals(listOf(2, 3, 4), rest(listOf(1, 2, 3, 4)))
-        assertEquals(listOf(2, 3), rest(listOf(1, 2, 3)))
-        assertEquals(listOf(2), rest(listOf(1, 2)))
-        assertEquals(listOf<Int>(), rest(listOf(1)))
-        assertEquals(listOf<Int>(), rest(listOf<Int>()))
+    "rest" {
+        rest(listOf(1, 2, 3, 4)) shouldBe listOf(2, 3, 4);
+        rest(listOf(1, 2, 3)) shouldBe listOf(2, 3);
+        rest(listOf(1, 2)) shouldBe listOf(2);
+        rest(listOf(1)) shouldBe listOf<Int>();
+        rest(listOf<Int>()) shouldBe listOf<Int>();
     }
 
-    @Test
-    fun last() {
-        assertEquals(4, last(listOf(1, 2, 3, 4)))
-        assertEquals(3, last(listOf(1, 2, 3)))
-        assertEquals(2, last(listOf(1, 2)))
-        assertEquals(1, last(listOf(1)))
-        assertEquals(null, last(listOf<Int>()))
+    "last" {
+        last(listOf(1, 2, 3, 4)) shouldBe 4
+        last(listOf(1, 2, 3)) shouldBe 3
+        last(listOf(1, 2)) shouldBe 2
+        last(listOf(1)) shouldBe 1
+        last(listOf<Int>()) shouldBe null
     }
 
-    @Test
-    fun butlast() {
-        assertEquals(3, butlast(listOf(1, 2, 3, 4)))
-        assertEquals(2, butlast(listOf(1, 2, 3)))
-        assertEquals(1, butlast(listOf(1, 2)))
-        assertEquals(null, butlast(listOf(1)))
-        assertEquals(null, butlast(listOf<Int>()))
-        assertEquals(3, butlast(Iterable { listOf(1, 2, 3, 4).iterator() }))
-        assertEquals(2, butlast(Iterable { listOf(1, 2, 3).iterator() }))
-        assertEquals(1, butlast(Iterable { listOf(1, 2).iterator() }))
-        assertEquals(null, butlast(Iterable { listOf(1).iterator() }))
-        assertEquals(null, butlast(Iterable { listOf<Int>().iterator() }))
+    "butlast" {
+        butlast(listOf(1, 2, 3, 4)) shouldBe 3
+        butlast(listOf(1, 2, 3)) shouldBe 2
+        butlast(listOf(1, 2)) shouldBe 1
+        butlast(listOf(1)) shouldBe null
+        butlast(listOf<Int>()) shouldBe null
+
+        butlast(Iterable { listOf(1, 2, 3, 4).iterator() }) shouldBe 3
+        butlast(Iterable { listOf(1, 2, 3).iterator() }) shouldBe 2
+        butlast(Iterable { listOf(1, 2).iterator() }) shouldBe 1
+        butlast(Iterable { listOf(1).iterator() }) shouldBe null
+        butlast(Iterable { listOf<Int>().iterator() }) shouldBe null
     }
-}
+})

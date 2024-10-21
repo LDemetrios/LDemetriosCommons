@@ -1,123 +1,175 @@
 package org.ldemetrios.js
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.datatest.withData
+import io.kotest.matchers.shouldBe
 
-import org.junit.jupiter.api.Assertions.*
+class `JSStuff Test` : FreeSpec({
+    "Bamboo" - {
+        "Primitives" - {
+            withData<JSStuff>(
+                { "$it is Bamboo" },
+                listOf(
+                    JSTrue, JSFalse,
+                    JSUndefined, JSNull,
+                    JSNumber(1.0),
+                    JSString("abc"),
+                    JSArray(JSTrue),
+                )
+            ) {
+                it.isBamboo() shouldBe true
+            }
+        }
 
-class JSStuffKtTest {
-    @Test
-    fun asJS() {
-    }
+        "Arrays" - {
+            withData<JSStuff>(
+                { "$it is Bamboo" },
+                listOf(
+                    JSArray(JSNumber(1.0)),
+                    JSArray(JSString("abc")),
+                    JSArray(JSArray(JSTrue) as JSStuff),
+                    JSArray(JSArray(JSFalse) as JSStuff),
+                    JSArray(JSArray(JSUndefined) as JSStuff),
+                    JSArray(JSArray(JSNull) as JSStuff),
+                    JSArray(JSArray(JSNumber(1.0)) as JSStuff),
+                )
+            ) {
+                it.isBamboo() shouldBe true
+            }
+            "Not" {
+                JSArray(JSArray(), JSTrue).isBamboo() shouldBe false
+            }
 
-    @Test
-    fun isBamboo() {
-        assertEquals(true, JSTrue.isBamboo())
-        assertEquals(true, JSFalse.isBamboo())
-        assertEquals(true, JSUndefined.isBamboo())
-        assertEquals(true, JSNull.isBamboo())
-        assertEquals(true, JSNumber(1.0).isBamboo())
-        assertEquals(true, JSString("abc").isBamboo())
-        assertEquals(true, JSArray(JSTrue).isBamboo())
+        }
 
-        assertEquals(true, JSArray(JSNumber(1.0)).isBamboo())
-        assertEquals(true, JSArray(JSString("abc")).isBamboo())
-        assertEquals(true, JSArray(JSArray(JSTrue) as JSStuff).isBamboo())
-        assertEquals(true, JSArray(JSArray(JSFalse) as JSStuff).isBamboo())
-        assertEquals(true, JSArray(JSArray(JSUndefined) as JSStuff).isBamboo())
-        assertEquals(true, JSArray(JSArray(JSNull) as JSStuff).isBamboo())
-        assertEquals(true, JSArray(JSArray(JSNumber(1.0)) as JSStuff).isBamboo())
-        assertEquals(false, JSArray(JSArray(), JSTrue).isBamboo())
-        assertEquals(false, JSArray(JSArray(JSArray(JSArray(JSTrue, JSFalse) as JSStuff) as JSStuff) as JSStuff).isBamboo())
-        assertEquals(
-            false, JSObject(
+        "Very nested" {
+            fun arr(x: JSStuff) = JSArray(x)
+            arr(arr(arr(arr(arr(arr(arr(1.js))))))).isBamboo() shouldBe true
+            JSObject("a" to JSObject("b" to JSObject("c" to JSObject()))).isBamboo() shouldBe true
+        }
+
+        "Bamboo spreads" {
+            JSArray(
+                JSArray(
+                    JSArray(
+                        JSArray(
+                            JSTrue,
+                            JSFalse
+                        ) as JSStuff
+                    ) as JSStuff
+                ) as JSStuff
+            ).isBamboo() shouldBe false
+
+            JSObject(
                 "abc" to JSArray(
                     JSObject(
                         "def" to JSArray(JSArray(JSTrue, JSFalse) as JSStuff)
                     ) as JSStuff
                 )
-            ).isBamboo()
-        )
-        assertEquals(true, JSObject("a" to JSObject("b" to JSObject("c" to JSObject()))).isBamboo())
+            ).isBamboo() shouldBe false
+        }
+
     }
 
-    @Test
-    fun jsBoolean() {
-        assertEquals(true, JSTrue.toBoolean())
-        assertEquals("true", JSTrue.toString())
-        assertEquals(1.0, JSTrue.toDouble())
-        assertEquals(false, JSFalse.toBoolean())
-        assertEquals("false", JSFalse.toString())
-        assertEquals(0.0, JSFalse.toDouble())
-        assertEquals(true, JSBoolean.of(true).toBoolean())
-        assertEquals(false, JSBoolean.of(false).toBoolean())
-        assertEquals("true", JSBoolean.of(true).toString())
-        assertEquals("false", JSBoolean.of(false).toString())
-        assertEquals(1.0, JSBoolean.of(true).toDouble())
-        assertEquals(0.0, JSBoolean.of(false).toDouble())
-        assertEquals("true", JSBoolean.of(true).toString(4))
-        assertEquals("false", JSBoolean.of(false).toString(4))
-        assertEquals(JSUndefined, JSTrue[0])
-        assertEquals(JSUndefined, JSFalse[0])
-        assertEquals(JSUndefined, JSTrue["abc"])
-        assertEquals(JSUndefined, JSFalse["abc"])
-        assertEquals(JSUndefined, JSTrue[JSTrue])
-        assertEquals(JSUndefined, JSFalse[JSUndefined])
+    "JSBoolean" - {
+        "Conversions" {
+            JSTrue.toBoolean() shouldBe true
+            JSTrue.toString() shouldBe "true"
+            JSTrue.toDouble() shouldBe 1.0
+            JSFalse.toBoolean() shouldBe false
+            JSFalse.toString() shouldBe "false"
+            JSFalse.toDouble() shouldBe 0.0
+            JSBoolean.of(true).toString(4) shouldBe "true"
+            JSBoolean.of(false).toString(4) shouldBe "false"
+        }
+
+        "JSBoolean.of" {
+            JSBoolean.of(true) shouldBe JSTrue
+            JSBoolean.of(false) shouldBe JSFalse
+        }
+
+        "Not indexable" {
+            JSTrue[0] shouldBe JSUndefined
+            JSFalse[0] shouldBe JSUndefined
+            JSTrue["abc"] shouldBe JSUndefined
+            JSFalse["abc"] shouldBe JSUndefined
+            JSTrue[JSTrue] shouldBe JSUndefined
+            JSFalse[JSUndefined] shouldBe JSUndefined
+        }
     }
 
-    @Test
-    fun jsUndefined() {
-        assertEquals("undefined", JSUndefined.toString())
-        assertEquals(false, JSUndefined.toBoolean())
-        assertEquals(0.0, JSUndefined.toDouble())
-        assertEquals("undefined", JSUndefined.toString(4))
-        assertEquals(JSUndefined, JSUndefined[0])
-        assertEquals(JSUndefined, JSUndefined["abc"])
-        assertEquals(JSUndefined, JSUndefined[JSTrue])
-        assertEquals(JSUndefined, JSUndefined[JSUndefined])
-        assertEquals(JSUndefined, JSUndefined[JSFalse])
-    }
+    "JSUndefined" - {
+        "Conversions" {
+            JSUndefined.toString() shouldBe "undefined"
+            JSUndefined.toBoolean() shouldBe false
+            JSUndefined.toDouble() shouldBe 0.0
+            JSUndefined.toString(4) shouldBe "undefined"
+        }
 
-    @Test
-    fun jsNull() {
-        assertEquals("null", JSNull.toString())
-        assertEquals(false, JSNull.toBoolean())
-        assertEquals(0.0, JSNull.toDouble())
-        assertEquals("null", JSNull.toString(4))
-        assertEquals(JSUndefined, JSNull[0])
-        assertEquals(JSUndefined, JSNull["abc"])
-        assertEquals(JSUndefined, JSNull[JSTrue])
-        assertEquals(JSUndefined, JSNull[JSFalse])
-        assertEquals(JSUndefined, JSNull[JSBoolean.of(true)])
-        assertEquals(JSUndefined, JSNull[JSBoolean.of(false)])
-        assertEquals(JSUndefined, JSNull[JSUndefined])
-        assertEquals(JSUndefined, JSNull[JSNull])
-    }
-
-    @Test
-    fun jsNumber() {
-        assertEquals(1.0, JSNumber(1.0).toDouble())
-        assertEquals("1", JSNumber(1.0).toString())
-        assertEquals("1", JSNumber(1.0).toString(4))
-        assertEquals("-1", JSNumber(-1.0).toString(4))
-        assertEquals(JSUndefined, JSNumber(1.0)[0])
-        assertEquals(JSUndefined, JSNumber(1.0)["abc"])
-        assertEquals(JSUndefined, JSNumber(1.0)[JSTrue])
-        assertEquals(JSUndefined, JSNumber(1.0)[JSUndefined])
-        assertEquals(JSUndefined, JSNumber(1.0)[JSFalse])
-        assertEquals(JSUndefined, JSNumber(1.0)[JSNull])
+        "Not indexable" {
+            JSUndefined[0] shouldBe JSUndefined
+            JSUndefined["abc"] shouldBe JSUndefined
+            JSUndefined[JSTrue] shouldBe JSUndefined
+            JSUndefined[JSUndefined] shouldBe JSUndefined
+            JSUndefined[JSFalse] shouldBe JSUndefined
+        }
     }
 
 
-    @Test
-    fun jsString() {
-        assertEquals("\"abc\"", JSString("abc").toString())
-        assertEquals("\"abc\"", JSString("abc").toString(4))
-        assertEquals(JSString("b"), JSString("abc")[1])
-        assertEquals(JSUndefined, JSString("abc")[3])
-        assertEquals(JSUndefined, JSString("abc")["abc"])
-        assertEquals(JSUndefined, JSString("abc")[JSTrue])
-        assertEquals(JSString("b"), JSString("abc")["1.0"])
-        assertEquals(JSUndefined, JSString("abc")["4"])
-        assertEquals(JSString("b"), JSString("abc")["1"])
+    "JSNull" - {
+        "Conversions" {
+            JSNull.toString() shouldBe "null"
+            JSNull.toBoolean() shouldBe false
+            JSNull.toDouble() shouldBe 0.0
+            JSNull.toString(4) shouldBe "null"
+        }
+
+        "Not indexable" {
+            JSNull[0] shouldBe JSUndefined
+            JSNull["abc"] shouldBe JSUndefined
+            JSNull[JSTrue] shouldBe JSUndefined
+            JSNull[JSFalse] shouldBe JSUndefined
+            JSNull[JSUndefined] shouldBe JSUndefined
+            JSNull[JSNull] shouldBe JSUndefined
+
+        }
     }
-}
+
+    "JSNumber" - {
+        "Conversions" {
+            JSNumber(1.0).toDouble() shouldBe 1.0
+            JSNumber(1.0).toString() shouldBe "1"
+            JSNumber(1.0).toString(4) shouldBe "1"
+            JSNumber(-1.0).toString(4) shouldBe "-1"
+        }
+        "Not indexable" {
+            JSNumber(1.0)[0] shouldBe JSUndefined
+            JSNumber(1.0)["abc"] shouldBe JSUndefined
+            JSNumber(1.0)[JSTrue] shouldBe JSUndefined
+            JSNumber(1.0)[JSUndefined] shouldBe JSUndefined
+            JSNumber(1.0)[JSFalse] shouldBe JSUndefined
+            JSNumber(1.0)[JSNull] shouldBe JSUndefined
+        }
+    }
+
+    "JSString" - {
+        "Conversions" {
+            JSString("abc").toString() shouldBe "\"abc\""
+            JSString("abc").toString(4) shouldBe "\"abc\""
+        }
+        "Not string-indexable" {
+            JSString("abc")["abc"] shouldBe JSUndefined
+            JSString("abc")[JSTrue] shouldBe JSUndefined
+        }
+        "Char is string" {
+            JSString("abc")[1] shouldBe JSString("b")
+            JSString("abc")[3] shouldBe JSUndefined
+        }
+        "Numeric string-indices" {
+            JSString("abc")["1.0"] shouldBe JSString("b")
+            JSString("abc")["4"] shouldBe JSUndefined
+            JSString("abc")["1"] shouldBe JSString("b")
+        }
+    }
+
+})

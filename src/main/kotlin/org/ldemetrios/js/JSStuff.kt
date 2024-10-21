@@ -3,7 +3,6 @@
 package org.ldemetrios.js
 
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Deprecated(
     "May cause interesting special effects",
@@ -106,7 +105,7 @@ data class JSNumber(private val number: BigDecimal) : JSPrimitive {
     override fun hashCode(): Int = number.toBigInteger().hashCode()
 }
 
-internal fun String.escape() =
+internal fun String.escapeJSON() =
     replace("\\", "\\\\")
         .replace("/", "\\/")
         .replace("\"", "\\\"")
@@ -119,7 +118,7 @@ internal fun String.escape() =
 data class JSString(val str: String) : JSStuff {
     override fun appendTo(sb: StringBuilder, indent: Int, curIndent: Int) {
         sb.append('"')
-        sb.append(str.escape())
+        sb.append(str.escapeJSON())
         sb.append('"')
     }
 

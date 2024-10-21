@@ -1,52 +1,49 @@
 package org.ldemetrios.utilities
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
-import org.junit.jupiter.api.Assertions.*
+class `NamingKt Test` : FreeSpec({
 
-class NamingKtTest {
-
-    @Test
-    fun ordinal() {
-        assertEquals("1-st", ordinal(1))
-        assertEquals("2-nd", ordinal(2))
-        assertEquals("3-rd", ordinal(3))
-        assertEquals("4-th", ordinal(4))
-        assertEquals("5-th", ordinal(5))
-        assertEquals("6-th", ordinal(6))
-        assertEquals("7-th", ordinal(7))
-        assertEquals("8-th", ordinal(8))
-        assertEquals("9-th", ordinal(9))
-        assertEquals("10-th", ordinal(10))
-        assertEquals("11-th", ordinal(11))
-        assertEquals("12-th", ordinal(12))
-        assertEquals("13-th", ordinal(13))
-        assertEquals("14-th", ordinal(14))
-        assertEquals("15-th", ordinal(15))
-        assertEquals("16-th", ordinal(16))
-        assertEquals("17-th", ordinal(17))
-        assertEquals("18-th", ordinal(18))
-        assertEquals("19-th", ordinal(19))
-        assertEquals("20-th", ordinal(20))
-        assertEquals("21-st", ordinal(21))
-        assertEquals("22-nd", ordinal(22))
-        assertEquals("23-rd", ordinal(23))
-        assertEquals("24-th", ordinal(24))
-        assertEquals("25-th", ordinal(25))
-        assertEquals("26-th", ordinal(26))
-        assertEquals("27-th", ordinal(27))
-        assertEquals("28-th", ordinal(28))
-        assertEquals("29-th", ordinal(29))
-        assertEquals("30-th", ordinal(30))
-        assertEquals("31-st", ordinal(31))
+    "ordinal" {
+        ordinal(1) shouldBe "1-st"
+        ordinal(2) shouldBe "2-nd"
+        ordinal(3) shouldBe "3-rd"
+        ordinal(4) shouldBe "4-th"
+        ordinal(5) shouldBe "5-th"
+        ordinal(6) shouldBe "6-th"
+        ordinal(7) shouldBe "7-th"
+        ordinal(8) shouldBe "8-th"
+        ordinal(9) shouldBe "9-th"
+        ordinal(10) shouldBe "10-th"
+        ordinal(11) shouldBe "11-th"
+        ordinal(12) shouldBe "12-th"
+        ordinal(13) shouldBe "13-th"
+        ordinal(14) shouldBe "14-th"
+        ordinal(15) shouldBe "15-th"
+        ordinal(16) shouldBe "16-th"
+        ordinal(17) shouldBe "17-th"
+        ordinal(18) shouldBe "18-th"
+        ordinal(19) shouldBe "19-th"
+        ordinal(20) shouldBe "20-th"
+        ordinal(21) shouldBe "21-st"
+        ordinal(22) shouldBe "22-nd"
+        ordinal(23) shouldBe "23-rd"
+        ordinal(24) shouldBe "24-th"
+        ordinal(25) shouldBe "25-th"
+        ordinal(26) shouldBe "26-th"
+        ordinal(27) shouldBe "27-th"
+        ordinal(28) shouldBe "28-th"
+        ordinal(29) shouldBe "29-th"
+        ordinal(30) shouldBe "30-th"
+        ordinal(31) shouldBe "31-st"
     }
 
-    @Test
-    fun naturallyJoin() {
-        assertEquals("1, 2, 3 and 4", naturallyJoin(1, 2, 3, 4))
-        assertEquals("1, 2 and 3", naturallyJoin(1, 2, 3))
-        assertEquals("1 and 2", naturallyJoin(1, 2))
-        assertEquals("1", naturallyJoin(1))
-        assertEquals("none", org.ldemetrios.utilities.naturallyJoin())
+    "naturallyJoin" {
+        naturallyJoin(1, 2, 3, 4) shouldBe "1, 2, 3 and 4"
+        naturallyJoin(1, 2, 3) shouldBe "1, 2 and 3"
+        naturallyJoin(1, 2) shouldBe "1 and 2"
+        naturallyJoin(1) shouldBe "1"
+        naturallyJoin() shouldBe "none"
     }
-}
+})

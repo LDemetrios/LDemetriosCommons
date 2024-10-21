@@ -1,14 +1,14 @@
 package org.ldemetrios.js
 
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
+import org.ldemetrios.testing.shouldFormatTo
 
 
-class JSObjectKtTest {
-    @Test
-    fun simple() {
-        val obj = JSObject(
+class `JSObject Test` : FreeSpec({
+    "Get/Set manipulations" - {
+        fun gen() = JSObject(
             "abc" to 1.js,
             "def" to JSTrue,
             "ghi" to JSNull,
@@ -18,90 +18,104 @@ class JSObjectKtTest {
             "1.0" to 566.js,
             "2.0" to 239.js,
         )
-        assertEquals(1.js, obj["abc"])
-        assertEquals(JSTrue, obj["def"])
-        assertEquals(JSNull, obj["ghi"])
-        assertEquals(JSUndefined, obj["jkl"])
-        assertEquals(JSArray(JSTrue, JSFalse), obj["mno"])
-        assertEquals(JSArray(1.js, JSTrue, JSNull), obj["pqr"])
-        assertEquals(566.js, obj["1.0"])
-        assertEquals(566.js, obj[1.0])
-        assertEquals(566.js, obj[1])
-        assertEquals(JSUndefined, obj["xyz"])
-        assertEquals(JSUndefined, obj["2"])
-        obj[3] = 4.js
-        assertEquals(4.js, obj["3.0"])
-        assertEquals(4.js, obj[3])
+
+        val obj = gen()
+
+        "Array access" {
+            obj["abc"] shouldBe 1.js
+            obj["def"] shouldBe JSTrue
+            obj["ghi"] shouldBe JSNull
+            obj["jkl"] shouldBe JSUndefined
+            obj["mno"] shouldBe JSArray(JSTrue, JSFalse)
+            obj["pqr"] shouldBe JSArray(1.js, JSTrue, JSNull)
+            obj["1.0"] shouldBe 566.js
+        }
+
+        "Missing key" {
+            obj["xyz"] shouldBe JSUndefined
+            obj["2"] shouldBe JSUndefined
+        }
+
+        "Numeric index access" {
+            obj[1.0] shouldBe 566.js
+            obj[1] shouldBe 566.js
+        }
+
+        "Modifying" {
+            val obj = gen()
+            obj[3] = 4.js
+            obj["3.0"] shouldBe 4.js
+            obj[3] shouldBe 4.js
+        }
     }
 
-    @Test
-    fun stringifyingSimple() {
+    "Basic stringification" - {
         val obj = JSObject(
             "abc" to 1.js,
             "def" to JSTrue,
             "ghi" to JSNull,
         )
-        assertEquals("""{"abc" : 1.0, "def" : true, "ghi" : null}""", obj.toString())
-        assertEquals("""{"abc" : 1.0, "def" : true, "ghi" : null}""", obj.toString(0))
-        assertEquals("""{"abc":1.0,"def":true,"ghi":null}""", obj.toString(-1))
+
+        "Default" {
+            obj shouldFormatTo """{"abc" : 1.0, "def" : true, "ghi" : null}"""
+        }
+        "In line" {
+            obj.toString(0) shouldFormatTo """{"abc" : 1.0, "def" : true, "ghi" : null}"""
+        }
+        "Dense" {
+            obj.toString(-1) shouldFormatTo """{"abc":1.0,"def":true,"ghi":null}"""
+        }
     }
 
-    @Test
-    fun stringifyingNested() {
+    "Stringifying nested" - {
         val obj = JSObject(
             "abc" to JSObject("def" to JSTrue),
             "ghi" to JSArray(JSTrue, JSNull),
             "jkl" to JSArray(JSObject("mno" to JSTrue), JSNull)
         )
-        assertEquals("""{"abc" : {"def" : true}, "ghi" : [true, null], "jkl" : [{"mno" : true}, null]}""", obj.toString())
-        assertEquals("""{"abc" : {"def" : true}, "ghi" : [true, null], "jkl" : [{"mno" : true}, null]}""", obj.toString(0))
-        assertEquals("""{"abc":{"def":true},"ghi":[true,null],"jkl":[{"mno":true},null]}""", obj.toString(-1))
+        "Default" {
+            obj shouldFormatTo """{"abc" : {"def" : true}, "ghi" : [true, null], "jkl" : [{"mno" : true}, null]}"""
+        }
+        "In line" {
+            obj.toString(0) shouldFormatTo """{"abc" : {"def" : true}, "ghi" : [true, null], "jkl" : [{"mno" : true}, null]}"""
+        }
+        "Dense" {
+            obj.toString(-1) shouldFormatTo """{"abc":{"def":true},"ghi":[true,null],"jkl":[{"mno":true},null]}"""
+        }
     }
 
-    @Test
-    fun stringifyingEmpty() {
+    "Stringifying empty" {
         val obj = JSObject()
-        assertEquals("{}", obj.toString())
-        assertEquals("{}", obj.toString(0))
-        assertEquals("{}", obj.toString(-1))
+        obj.toString() shouldBe "{}"
+        obj.toString(0) shouldBe "{}"
+        obj.toString(-1) shouldBe "{}"
     }
 
-    @Test
-    fun stringifyingEmptyNested() {
+    "Stringifying empty nested" {
         val obj = JSObject("abc" to JSObject())
-        assertEquals("""{"abc" : {}}""", obj.toString())
-        assertEquals("""{"abc" : {}}""", obj.toString(0))
-        assertEquals("""{"abc":{}}""", obj.toString(-1))
+        obj.toString() shouldBe """{"abc" : {}}"""
+        obj.toString(0) shouldBe """{"abc" : {}}"""
+        obj.toString(-1) shouldBe """{"abc":{}}"""
     }
 
-    @Test
-    fun stringifyingEmptyArray() {
-        val obj = JSObject("abc" to JSArray())
-        assertEquals("""{"abc" : []}""", obj.toString())
-        assertEquals("""{"abc" : []}""", obj.toString(0))
-        assertEquals("""{"abc":[]}""", obj.toString(-1))
-    }
-
-    @Test
-    fun stringifyingRecursive() {
+    "Stringifying recursive" {
         val obj = JSObject(
             "abc" to JSTrue
         )
         obj["def"] = obj
-        assertFails { obj.toString() } // TODO Change to proper formatting?
+        shouldThrow<StackOverflowError> { obj.toString() } // TODO Change to proper formatting?
     }
 
-    @Test
-    fun protoChain() {
+    "Prototype chain" {
         val obj = JSObject(
             "abc" to JSTrue
         )
-        assertEquals(JSTrue, obj["abc"])
+        obj["abc"] shouldBe JSTrue
         obj.__proto__ = JSObject("ghi" to JSFalse)
-        assertEquals(JSFalse, obj["ghi"])
-        assertEquals(JSUndefined, obj["1.0"])
+        obj["ghi"] shouldBe JSFalse
+        obj["1.0"] shouldBe JSUndefined
         obj.__proto__!!.__proto__ = obj
-        assertFails { obj["1.0"] } // TODO Probably do check when assigning prototypes?..
+        shouldThrow<StackOverflowError> { obj["1.0"] } // TODO Probably do check when assigning prototypes?..
     }
-}
+})
 

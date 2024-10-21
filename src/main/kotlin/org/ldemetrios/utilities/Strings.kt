@@ -15,3 +15,22 @@ fun String.replaceAll(map: List<Pair<String, String>>): String {
     }
     return res
 }
+
+fun String.replaceAll(vararg map: Pair<String, String>): String = replaceAll(map.toMap())
+
+fun String.escape() = this.replaceAll(
+    "\\" to "\\\\",
+    "\n" to "\\n",
+    "\r" to "\\r",
+    "\t" to "\\t",
+    "\"" to "\\\"",
+)
+
+fun String.unescape() = this.replaceAll(
+    "\\n" to "\n",
+    "\\r" to "\r",
+    "\\t" to "\t",
+    "\\\"" to "\"",
+    "\\\\" to "\\",
+)
+

@@ -12,3 +12,5 @@ val NEWLINES = arrayOf(
     /* LS:  Line Separator,      */ '\u2028',
     /* PS:  Paragraph Separator, */ '\u2029',
 )
+
+val NEWLINE_PATTERN = Regex("\r\n|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]")

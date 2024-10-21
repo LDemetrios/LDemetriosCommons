@@ -1,4 +1,4 @@
-  @file:Suppress("PackageDirectoryMismatch", "unused", "NAME_SHADOWING", "KotlinRedundantDiagnosticSuppress", "UNUSED_PARAMETER", "UNUSED_PARAMETER", "ObjectPropertyName", "NonAsciiCharacters", "RedundantLambdaArrow")  
+  @file:Suppress("PackageDirectoryMismatch", "unused", "NAME_SHADOWING", "KotlinRedundantDiagnosticSuppress", "UNUSED_PARAMETER", "UNUSED_PARAMETER", "ObjectPropertyName", "NonAsciiCharacters", "RedundantLambdaArrow", "TrailingComma")  
 
  package org.ldemetrios.functional
 

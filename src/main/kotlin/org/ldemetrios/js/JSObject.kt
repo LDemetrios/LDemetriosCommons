@@ -41,6 +41,7 @@ class JSObject private constructor(
     }
 
     constructor(vararg entries: Pair<String, JSStuff>) : this(OBJECT_PROTOTYPE, entries.toMap(mutableMapOf()))
+    constructor(entries: Map<String, JSStuff>) : this(OBJECT_PROTOTYPE, entries.toMutableMap())
     constructor(proto: JSObject, vararg entries: Pair<String, JSStuff>) : this(proto, entries.toMap(mutableMapOf()))
     constructor() : this(OBJECT_PROTOTYPE, mutableMapOf())
 
@@ -172,7 +173,7 @@ class JSObject private constructor(
         sb: StringBuilder, key: String, value: JSStuff, separ: String, indent: Int, curIndent: Int
     ) {
         sb.append('"')
-        sb.append(key.escape())
+        sb.append(key.escapeJSON())
         sb.append(separ)
         value.appendTo(sb, indent, curIndent)
     }

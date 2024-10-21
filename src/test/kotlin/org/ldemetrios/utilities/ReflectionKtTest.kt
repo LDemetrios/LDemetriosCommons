@@ -1,50 +1,38 @@
 package org.ldemetrios.utilities
 
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.shouldBe
 
-import org.junit.jupiter.api.Assertions.*
+fun <T> Assertions_assertEqualLists(a: List<T>, b: List<T>) = b shouldBe a
 
-class ReflectionKtTest {
-    @Test
-    fun superclassList() {
-        Assertions_assertEqualLists(
-            listOf(LinkedHashMap::class.java, HashMap::class.java, java.util.AbstractMap::class.java, Object::class.java),
-            LinkedHashMap::class.java.superclassList()
+class `ReflectionKt Test` : FreeSpec({
+    "superclassList" {
+        LinkedHashMap::class.java.superclassList() shouldBe listOf(
+            LinkedHashMap::class.java,
+            HashMap::class.java,
+            java.util.AbstractMap::class.java,
+            Object::class.java
         )
-        Assertions_assertEqualLists(
-            listOf(Integer::class.java, Number::class.java, Object::class.java),
-            Integer::class.java.superclassList()
+        Integer::class.java.superclassList() shouldBe listOf(
+            Integer::class.java,
+            Number::class.java,
+            Object::class.java
         )
-        Assertions_assertEqualLists(
-            listOf(String::class.java, Object::class.java),
-            String::class.java.superclassList()
-        )
-        Assertions_assertEqualLists(
-            listOf(Object::class.java),
-            Object::class.java.superclassList()
-        )
-        Assertions_assertEqualLists(
-            listOf(Int::class.java),
-            Int::class.java.superclassList()
-        )
+        String::class.java.superclassList() shouldBe listOf(String::class.java, Object::class.java)
+        Object::class.java.superclassList() shouldBe listOf(Object::class.java)
+        Int::class.java.superclassList() shouldBe listOf(Int::class.java)
     }
-    @Test
-    fun juniorestCommonSuperclass() {
-        assertEquals(
-            Object::class.java,
-            juniorestCommonSuperclass(Integer::class.java, String::class.java)
-        )
-        assertEquals(
-            java.lang.Number::class.java,
-            juniorestCommonSuperclass(Integer::class.java, java.lang.Double::class.java)
-        )
-        assertEquals(
-            null,
-            juniorestCommonSuperclass(Int::class.java, String::class.java)
-        )
-        assertEquals(
-            String::class.java,
-            juniorestCommonSuperclass(Nothing::class.java, String::class.java)
-        )
+
+    "juniorestCommonSuperclass" {
+        juniorestCommonSuperclass(Integer::class.java, String::class.java) shouldBe Object::class.java
+
+        juniorestCommonSuperclass(
+            Integer::class.java,
+            java.lang.Double::class.java
+        ) shouldBe java.lang.Number::class.java
+
+        juniorestCommonSuperclass(Int::class.java, String::class.java) shouldBe null
+
+        juniorestCommonSuperclass(Nothing::class.java, String::class.java) shouldBe String::class.java
     }
-}
+})
